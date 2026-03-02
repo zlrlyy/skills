@@ -6,12 +6,16 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 # --- 配置信息 (优先从环境变量读取) ---
-IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "corp.netease.com")
+IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "imap.corp.netease.com")
 IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "993"))
 IMAP_USER = os.getenv("EMAIL_SMTP_USER", "")
 IMAP_PASS = os.getenv("EMAIL_SMTP_PASS", "")
-REPLY_LOG = "reply_stats.json"
-STATUS_FILE = "email_status.json"
+
+# 获取脚本目录，构建资源文件路径
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "assets")
+REPLY_LOG = os.path.join(ASSETS_DIR, "reply_stats.json")
+STATUS_FILE = os.path.join(ASSETS_DIR, "email_status.json")
 
 def analyze_bounce_reason(body: str) -> str:
     """分析退信原因"""

@@ -21,7 +21,11 @@ EMAIL_USER = os.getenv("EMAIL_SMTP_USER", "")
 EMAIL_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 
 FAQ_PATH = "/home/node/.openclaw/media/inbound/c3b043ac-df37-4fb0-9e21-89c4282030ef"
-PENDING_REPLIES_FILE = "pending_replies.json"
+
+# 获取脚本目录，构建资源文件路径
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "assets")
+PENDING_REPLIES_FILE = os.path.join(ASSETS_DIR, "pending_replies.json")
 
 def decode_email_content(content, encoding: Optional[str] = None) -> str:
     """解码邮件内容"""

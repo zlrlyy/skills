@@ -21,7 +21,11 @@ TEST_EMAIL = os.getenv("EMAIL_TEST_TARGET", "")
 EXCEL_PATH = os.path.expanduser(os.getenv("EMAIL_EXCEL_PATH", "~/Desktop/邮箱.xlsx"))
 HTML_PATH = os.path.expanduser(os.getenv("EMAIL_HTML_PATH", "~/Desktop/邮件内容.html"))
 TITLE_TXT_PATH = os.path.expanduser(os.getenv("EMAIL_TITLE_PATH", "~/Desktop/邮件标题.txt"))
-LOG_FILE = "email_status.json"
+
+# 获取脚本目录，构建资源文件路径
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "assets")
+LOG_FILE = os.path.join(ASSETS_DIR, "email_status.json")
 
 BATCH_SIZE = 135  # 每个批次的收件人数量
 MIN_DELAY = 3.0  # 最小发送间隔
