@@ -3,16 +3,23 @@ import email
 import json
 import os
 from datetime import datetime
+from typing import Dict, List, Optional
 
 # --- 配置信息 (优先从环境变量读取) ---
-IMAP_HOST = os.getenv("EMAIL_IMAP_HOST","")
-IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT",465)) if os.getenv("EMAIL_IMAP_PORT") else 465
+IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "corp.netease.com")
+IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "993"))
 IMAP_USER = os.getenv("EMAIL_SMTP_USER", "")
 IMAP_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 REPLY_LOG = "reply_stats.json"
+STATUS_FILE = "email_status.json"
 
-def analyze_bounce_reason(body):
+def analyze_bounce_reason(body: str) -> str:
+    """分析退信原因"""
+    if not body:
+        return "未知原因"
+
     body_lower = body.lower()
+
     if "user not found" in body_lower or "invalid user" in body_lower or "不存在" in body:
         return "账号不存在 (Invalid User)"
     elif "spam" in body_lower or "rejected" in body_lower or "垃圾邮件" in body:
@@ -21,79 +28,117 @@ def analyze_bounce_reason(body):
         return "对方邮箱已满 (Mailbox Full)"
     return "其他原因 (详见摘要)"
 
-def check_replies():
-    # 修正已发人数统计：从日志文件中尝试汇总今日数据
-    sent_total = 0
-    if os.path.exists("email_status.json"):
-        try:
-            with open("email_status.json", "r") as f:
-                data = json.load(f)
-                # 如果是单次发信逻辑，这里显示最后一次成功数
-                sent_total = data.get("success", 0)
-        except: pass
+def get_sent_count() -> int:
+    """从日志文件获取已发送邮件数量"""
+    if not os.path.exists(STATUS_FILE):
+        return 0
+
+    try:
+        with open(STATUS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("success", 0)
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"读取发送统计失败: {e}")
+        return 0
+
+
+def decode_email_header(header: str) -> str:
+    """解码邮件标题"""
+    if not header:
+        return ""
+
+    try:
+        parts = email.header.decode_header(header)
+        decoded = ""
+        for part, encoding in parts:
+            if isinstance(part, bytes):
+                decoded += part.decode(encoding or 'utf-8', errors='ignore')
+            else:
+                decoded += str(part)
+        return decoded
+    except Exception as e:
+        print(f"解码邮件标题失败: {e}")
+        return header
+
+
+def extract_email_body(msg: email.message.Message) -> str:
+    """提取邮件正文"""
+    body = ""
+    try:
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    payload = part.get_payload(decode=True)
+                    if payload:
+                        body = payload.decode('utf-8', errors='ignore')
+                        break
+        else:
+            payload = msg.get_payload(decode=True)
+            if payload:
+                body = payload.decode('utf-8', errors='ignore')
+    except Exception as e:
+        print(f"提取邮件正文失败: {e}")
+
+    return body
+
+
+def check_replies() -> Optional[Dict]:
+    """检查邮件回复和退信"""
+    if not IMAP_USER or not IMAP_PASS:
+        print("错误: 未配置邮箱账号或密码")
+        return None
+
+    sent_total = get_sent_count()
 
     replied_list = []
     bounce_list = []
-    
+
     # 严格过滤名单：系统号/订阅号不计入回信
     SYSTEM_KEYWORDS = ["noreply", "notification", "service", "support", "no-reply", "report"]
-
     today_imap = datetime.now().strftime("%d-%b-%Y")
 
     try:
         mail = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
         mail.login(IMAP_USER, IMAP_PASS)
-        mail.select("INBOX") 
+        mail.select("INBOX")
 
         status, response = mail.search(None, f'(SINCE "{today_imap}")')
-        
+
         if status == 'OK' and response[0]:
             ids = response[0].split()
             for r_id in ids:
                 status, data = mail.fetch(r_id, '(RFC822)')
-                if status != 'OK': continue
-                
+                if status != 'OK':
+                    continue
+
                 msg = email.message_from_bytes(data[0][1])
                 from_addr = msg.get('From', '').lower()
                 subject = msg.get('Subject', '')
-                
-                # 解码标题
-                try:
-                    subject_parts = email.header.decode_header(subject)
-                    decoded_subject = ""
-                    for part, encoding in subject_parts:
-                        if isinstance(part, bytes):
-                            decoded_subject += part.decode(encoding or 'utf-8', errors='ignore')
-                        else:
-                            decoded_subject += part
-                    subject = decoded_subject
-                except: pass
 
-                # 提取正文摘要用于退信分析
-                body = ""
-                if msg.is_multipart():
-                    for part in msg.walk():
-                        if part.get_content_type() == "text/plain":
-                            payload = part.get_payload(decode=True)
-                            if payload: body = payload.decode('utf-8', errors='ignore')
-                            break
-                else:
-                    payload = msg.get_payload(decode=True)
-                    if payload: body = payload.decode('utf-8', errors='ignore')
+                subject = decode_email_header(subject)
+                body = extract_email_body(msg)
 
                 # 1. 检查退信
                 if "系统退信" in subject or "systems bounce" in subject.lower() or "mailer-daemon" in from_addr:
                     reason = analyze_bounce_reason(body)
-                    bounce_list.append({"from": from_addr, "reason": reason, "summary": body[:50]})
-                
+                    bounce_list.append({
+                        "from": from_addr,
+                        "reason": reason,
+                        "summary": body[:50]
+                    })
+
                 # 2. 检查真实回信 (排除自己和系统号)
                 else:
                     is_system = any(kw in from_addr for kw in SYSTEM_KEYWORDS)
                     is_self = IMAP_USER.lower() in from_addr
-                    
-                    if not is_system and not is_self:
-                        replied_list.append({"from": from_addr, "subject": subject})
 
+                    if not is_system and not is_self:
+                        replied_list.append({
+                            "from": from_addr,
+                            "subject": subject
+                        })
+
+        mail.close()
         mail.logout()
 
         stats = {
@@ -107,10 +152,14 @@ def check_replies():
 
         with open(REPLY_LOG, 'w', encoding='utf-8') as f:
             json.dump(stats, f, ensure_ascii=False, indent=4)
-        
+
         return stats
 
+    except imaplib.IMAP4.error as e:
+        print(f"IMAP 连接错误: {e}")
+        return None
     except Exception as e:
+        print(f"检查回信失败: {e}")
         return None
 
 if __name__ == "__main__":
