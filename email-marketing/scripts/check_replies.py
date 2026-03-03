@@ -6,8 +6,8 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 # --- 配置信息 (优先从环境变量读取) ---
-IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "imap.corp.netease.com")
-IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "993"))
+IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "example.com")
+IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "456"))
 IMAP_USER = os.getenv("EMAIL_SMTP_USER", "")
 IMAP_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 

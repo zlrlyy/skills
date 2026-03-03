@@ -13,10 +13,10 @@ import time
 from typing import List, Dict, Optional
 
 # --- 配置信息 (从环境变量读取) ---
-IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "imap.corp.netease.com")
-IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "993"))
-SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "smtp.corp.netease.com")
-SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "465"))
+IMAP_HOST = os.getenv("EMAIL_IMAP_HOST", "example.com")
+IMAP_PORT = int(os.getenv("EMAIL_IMAP_PORT", "456"))
+SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "example.com")
+SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "123"))
 EMAIL_USER = os.getenv("EMAIL_SMTP_USER", "")
 EMAIL_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 

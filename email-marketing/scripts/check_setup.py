@@ -59,12 +59,12 @@ def check_email_config():
     if smtp_host:
         print(f"✅ EMAIL_SMTP_HOST 已配置: {smtp_host}")
     else:
-        print(f"ℹ️  EMAIL_SMTP_HOST 使用默认: smtp.corp.netease.com")
+        print(f"ℹ️  EMAIL_SMTP_HOST 使用默认: example.com")
 
     if imap_host:
         print(f"✅ EMAIL_IMAP_HOST 已配置: {imap_host}")
     else:
-        print(f"ℹ️  EMAIL_IMAP_HOST 使用默认: imap.corp.netease.com")
+        print(f"ℹ️  EMAIL_IMAP_HOST 使用默认: example.com")
 
     return bool(smtp_user and smtp_pass)
 

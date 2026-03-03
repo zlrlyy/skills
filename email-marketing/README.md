@@ -38,11 +38,11 @@ export EMAIL_SMTP_USER='your-email@example.com'
 export EMAIL_SMTP_PASS='your-password'
 export EMAIL_TEST_TARGET='test@example.com'
 
-# SMTP/IMAP 服务器配置（可选，默认为网易企业邮箱）
-export EMAIL_SMTP_HOST='smtp.example.com'  # 默认: smtp.corp.netease.com
-export EMAIL_SMTP_PORT='465'                # 默认: 465
-export EMAIL_IMAP_HOST='imap.example.com'  # 默认: imap.corp.netease.com
-export EMAIL_IMAP_PORT='993'                # 默认: 993
+# SMTP/IMAP 服务器配置（可选）
+export EMAIL_SMTP_HOST='example.com'  # 默认: example.com
+export EMAIL_SMTP_PORT='123'                # 默认: 123
+export EMAIL_IMAP_HOST='example.com'  # 默认: example.com
+export EMAIL_IMAP_PORT='456'                # 默认: 456
 
 # FAQ 文件路径（可选，自动回信功能需要）
 export EMAIL_FAQ_PATH='~/Desktop/faq.txt'   # 默认: ~/Desktop/faq.txt
@@ -64,7 +64,7 @@ python3 check_setup.py
 
 您好！
 
-我是来自有道广告团队的市场专员...
+我是来XXX的某某某
 
 期待您的回复！
 ```

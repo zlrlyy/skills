@@ -12,8 +12,8 @@ import re
 from typing import Optional, Dict, Tuple
 
 # --- 配置信息 (从环境变量读取) ---
-SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "smtp.corp.netease.com")
-SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "465"))
+SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "example.com")
+SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "123"))
 SMTP_USER = os.getenv("EMAIL_SMTP_USER", "")
 SMTP_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 TEST_EMAIL = os.getenv("EMAIL_TEST_TARGET", "")
