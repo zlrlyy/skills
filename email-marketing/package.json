@@ -1,6 +1,6 @@
 {
   "name": "@zlr_236/email-marketing",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "智能邮件营销工具，支持AI自动生成美观HTML、个性化群发、自动回信等功能",
   "main": "index.js",
   "type": "module",
