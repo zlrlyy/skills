@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# 敏感配置
+.env
+*.env
+
+# 日志和数据
+assets/email_status.json
+assets/reply_stats.json
+assets/pending_replies.json
+
+# 用户数据（不应提交到版本控制）
+邮箱.xlsx
+邮件*.txt
+邮件*.html
+faq.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
