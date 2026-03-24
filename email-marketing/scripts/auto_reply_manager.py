@@ -19,6 +19,7 @@ SMTP_HOST = os.getenv("EMAIL_SMTP_HOST", "example.com")
 SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "123"))
 EMAIL_USER = os.getenv("EMAIL_SMTP_USER", "")
 EMAIL_PASS = os.getenv("EMAIL_SMTP_PASS", "")
+FROM_NAME = os.getenv("EMAIL_FROM_NAME", "")
 
 # 获取脚本目录，构建资源文件路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -161,13 +162,10 @@ def send_reply(to_email: str, subject: str, body: str, original_msg_id: Optional
         return False
 
     try:
-        # 跳过证书验证
         context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
 
         msg = MIMEMultipart()
-        msg['From'] = f"Youdao Ads <{EMAIL_USER}>"
+        msg['From'] = f"{FROM_NAME} <{EMAIL_USER}>" if FROM_NAME else EMAIL_USER
         msg['To'] = to_email
         # 如果是回复，标题加上 Re:
         if not subject.lower().startswith("re:"):

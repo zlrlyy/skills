@@ -42,7 +42,8 @@ def check_email_config():
     smtp_host = os.getenv("EMAIL_SMTP_HOST")
 
     if smtp_user:
-        print(f"✅ EMAIL_SMTP_USER 已配置: {smtp_user}")
+        masked = smtp_user[:3] + "***" + smtp_user[smtp_user.index("@"):] if "@" in smtp_user else "***"
+        print(f"✅ EMAIL_SMTP_USER 已配置: {masked}")
     else:
         print("⚠️  EMAIL_SMTP_USER 未配置")
 
@@ -52,7 +53,8 @@ def check_email_config():
         print("⚠️  EMAIL_SMTP_PASS 未配置")
 
     if test_email:
-        print(f"✅ EMAIL_TEST_TARGET 已配置: {test_email}")
+        masked_test = test_email[:3] + "***" + test_email[test_email.index("@"):] if "@" in test_email else "***"
+        print(f"✅ EMAIL_TEST_TARGET 已配置: {masked_test}")
     else:
         print("⚠️  EMAIL_TEST_TARGET 未配置")
 

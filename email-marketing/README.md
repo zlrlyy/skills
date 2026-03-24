@@ -6,7 +6,7 @@
 
 ### 🤖 AI智能生成HTML
 - 根据邮件文案内容自动选择合适的设计风格
-- 支持 Claude API 和 OpenAI API
+- 在 OpenClaw 平台中由 AI Agent 直接将纯文本转换为 HTML
 - 严格保留原文内容和变量占位符
 - 响应式设计，兼容所有主流邮件客户端
 

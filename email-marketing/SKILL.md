@@ -207,9 +207,9 @@ python3 check_replies.py
 
 ## 故障排查
 
-### 问题 1: AI 生成 HTML 失败
+### 问题 1: AI 生成 HTML 效果不佳
 
-**症状**：`txt_to_html.py` 报错或生成空文件
+**症状**：生成的 HTML 样式异常或变量丢失
 
 **解决方案**：
 
@@ -220,8 +220,8 @@ ls ~/Desktop/邮件文案.txt
 # 检查文案内容是否为空
 cat ~/Desktop/邮件文案.txt
 
-# 查看详细错误日志
-python3 txt_to_html.py --verbose
+# 在 OpenClaw 平台中重新让 AI 生成 HTML
+# 确保提示 AI 保留所有【变量名】占位符
 ```
 
 ### 问题 2: 发送失败

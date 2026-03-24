@@ -17,6 +17,7 @@ SMTP_PORT = int(os.getenv("EMAIL_SMTP_PORT", "123"))
 SMTP_USER = os.getenv("EMAIL_SMTP_USER", "")
 SMTP_PASS = os.getenv("EMAIL_SMTP_PASS", "")
 TEST_EMAIL = os.getenv("EMAIL_TEST_TARGET", "")
+FROM_NAME = os.getenv("EMAIL_FROM_NAME", "")
 
 EXCEL_PATH = os.path.expanduser(os.getenv("EMAIL_EXCEL_PATH", "~/Desktop/邮箱.xlsx"))
 HTML_PATH = os.path.expanduser(os.getenv("EMAIL_HTML_PATH", "~/Desktop/邮件内容.html"))
@@ -140,8 +141,6 @@ def send_bulk_emails(test_mode: bool = True, test_email: Optional[str] = None) -
         return None
 
     context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
 
     results = {
         "total": 1 if test_mode else len(df),
@@ -189,7 +188,7 @@ def send_bulk_emails(test_mode: bool = True, test_email: Optional[str] = None) -
                         final_html += generate_random_tag()
 
                         msg = MIMEMultipart()
-                        msg['From'] = f"Youdao Ads <{SMTP_USER}>"
+                        msg['From'] = f"{FROM_NAME} <{SMTP_USER}>" if FROM_NAME else SMTP_USER
                         msg['To'] = addr
                         msg['Subject'] = final_subject
                         msg.attach(MIMEText(final_html, 'html', 'utf-8'))
